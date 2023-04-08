@@ -6,7 +6,7 @@ const Category = require("../models/category");
 exports.createProduct = (req, res) => {
   // res.status(200).json({file:req.files,body:req.body})
 
-  const { name, price, description,productStatus ,category, quantity, createdBy } = req.body;
+  const { name, price, description, category, quantity, createdBy } = req.body;
 
   let productPictures = [];
 
@@ -15,6 +15,7 @@ exports.createProduct = (req, res) => {
       return { img: file.filename };
     });
   }
+  const productStatus = "waiting";
 
   const product = new Product({
     name: name,
@@ -130,11 +131,38 @@ exports.deleteProductById = (req, res) => {
 };
 
 exports.getProducts = async (req, res) => {
+  console.log(req, "getProducts");
   const products = await Product.find({ createdBy: req.user._id })
-    .select("_id createdBy name price quantity slug description productPictures category productStatus")
-    .populate({ path: "category", select: "_id name"})
+    .select(
+      "_id createdBy name price quantity slug description productPictures category productStatus"
+    )
+    .populate({ path: "category", select: "_id name" })
     // .populate({ path: "products", select: "createdBy" })
     .exec();
 
   res.status(200).json({ products });
 };
+
+exports.updateProductStatus = (req, res) => {
+  const productId = req.params.productId;
+  const newProductStatus = req.body.productStatus;
+  Product.updateOne(
+    { _id: productId },
+    { $set: { productStatus: newProductStatus } }
+  )
+    .then((result) => {
+      console.log(`Product ${productId} status updated. Result: `, result);
+      console.log("prodcutStatus :",newProductStatus)
+      if (result.nModified === 0) {
+        res.status(404).json({ message: `Product ${productId} not found.` });
+      } else {
+        res.status(200).json({ message: "Product status updated successfully." });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    });
+};
+
+

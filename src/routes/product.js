@@ -1,6 +1,6 @@
 const express = require("express");
 const { requireSignin, adminMiddleware } = require("../common-middleware");
-const { createProduct, getProductsBySlug, getProductDetailsById, deleteProductById, getProducts } = require("../controller/product");
+const { createProduct, getProductsBySlug, getProductDetailsById, deleteProductById, getProducts, updateProductStatus } = require("../controller/product");
 // const { addCategory, getCategories } = require('../controller/category');
 const multer = require("multer");
 const path = require("path");
@@ -25,5 +25,7 @@ router.get("/products/:slug", getProductsBySlug);
 router.get("/product/:productId",getProductDetailsById)
 router.delete("/product/deleteProductById",requireSignin,adminMiddleware,deleteProductById);
 router.post("/product/getProducts",requireSignin,adminMiddleware,getProducts);
+router.put('/product/:productId/updateProductStatus', requireSignin, adminMiddleware, updateProductStatus);
+
 
 module.exports = router;

@@ -28,13 +28,11 @@ const productSchema = new mongoose.Schema(
     productPictures: [{ img: { type: String } }],
 
     productStatus: {
-      type: {
-        type: String,
-        // enum: ["waiting", "active", "inactive"],
-        default: "waiting",
-      },
+      type: String,
+      required: true,
+      default:'waiting',
+      trim: true,
     },
-
     reviews: [
       {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
